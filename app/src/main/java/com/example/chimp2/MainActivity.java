@@ -6,12 +6,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    int TOTAL = 15;
+    int TOTAL = 12;
     Button buttons[] = new Button[16];
     int nums[] = new int[TOTAL];
     int current = 0;
