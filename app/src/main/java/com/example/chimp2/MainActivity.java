@@ -6,40 +6,86 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    int TOTAL = 12;
+    int TOTAL = 16;
+    int streak = 0;
     Button buttons[] = new Button[16];
     int nums[] = new int[TOTAL];
     int current = 0;
+    boolean END = false;
+    boolean WIN = false;
+    TextView streakText;
 
     public void run(){
+        streakText.setText("Streak: " + String.valueOf(streak));
+        populate_array(nums, -1);
         set_nums();
     }
 
     public void set_nums(){
         fill_rand(nums);
 
+        Log.i("check-up", "made it 2");
         for(int i = 0; i < TOTAL; i++){
-            buttons[nums[i]].setText(String.valueOf(i + 1));
+            buttons[nums[i]].setText(String.valueOf(i+1));
+            buttons[nums[i]].setTextColor(Color.parseColor("#0061ff"));
         }
     }
 
     public void check_guess(int guess){
-        if(guess == nums[current]) {
+        if(current > nums.length - 1)
+            return;
+
+        if(guess == nums[current] && END == false) {
             if(current == 0)
                 clear_buttons();
+
             buttons[guess].setText(String.valueOf("x"));
             buttons[guess].setBackgroundResource(R.drawable.button_background2);
-            if(current < TOTAL - 1)
+
+            if(current < TOTAL) {
                 current++;
+            }
+
+            if(current == TOTAL) {
+                WIN = true;
+                streak++;
+                show_nums();
+                streakText.setText("Streak: " + String.valueOf(streak));
+            }
         }
-        else{
+        else if(END == false){
+            END = true;
+            streak = 0;
             buttons[guess].setText(String.valueOf("x"));
             buttons[guess].setBackgroundResource(R.drawable.button_background3);
+            show_nums();
         }
+    }
+
+    public void show_nums(){
+        for(int i = 0; i < TOTAL; ++i){
+            buttons[nums[i]].setText(String.valueOf(i+1));
+        }
+    }
+
+    public void retry(View v){
+        clear_buttons();
+        for(int i = 0; i < 16; ++i){
+            buttons[i].setBackgroundResource(R.drawable.button_background);
+        }
+        if(WIN == false)
+            streak = 0;
+        current = 0;
+        END = false;
+        WIN = false;
+        run();
     }
 
     @Override
@@ -108,6 +154,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void initial_buttons(){
+        streakText = (TextView)findViewById(R.id.streakText);
+
         buttons[0] = (Button)findViewById(R.id.button1);
         buttons[1] = (Button)findViewById(R.id.button2);
         buttons[2] = (Button)findViewById(R.id.button3);
@@ -180,7 +228,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int num = 0;
 
         boolean duplicate;
-        duplicate = check_array(nums, num);
 
         for(int i = 0; i < nums.length; ++i){
             num = rand.nextInt(16);
@@ -190,6 +237,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 nums[i] = num;
             else
                 --i;
+        }
+    }
+
+    public void populate_array(int arr[], int fill){
+        for(int i = 0; i < arr.length; ++i){
+            arr[i] = fill;
         }
     }
 }
