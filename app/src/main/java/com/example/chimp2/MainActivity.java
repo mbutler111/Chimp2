@@ -1,5 +1,6 @@
 package com.example.chimp2;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,10 +14,10 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    int TOTAL = 16;
+    int TOTAL;
     int streak = 0;
     Button buttons[] = new Button[16];
-    int nums[] = new int[TOTAL];
+    int nums[] = new int[16];
     int current = 0;
     boolean END = false;
     boolean WIN = false;
@@ -31,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void set_nums(){
         fill_rand(nums);
 
-        Log.i("check-up", "made it 2");
         for(int i = 0; i < TOTAL; i++){
             buttons[nums[i]].setText(String.valueOf(i+1));
             buttons[nums[i]].setTextColor(Color.parseColor("#0061ff"));
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void check_guess(int guess){
-        if(current > nums.length - 1)
+        if(current > TOTAL - 1)
             return;
 
         if(guess == nums[current] && END == false) {
@@ -86,6 +86,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         END = false;
         WIN = false;
         run();
+    }
+
+    public void goBack(View v){
+        Intent startScreen = new Intent(this, startScreen.class);
+        startActivity(startScreen);
     }
 
     @Override
@@ -148,6 +153,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Bundle startData = getIntent().getExtras();
+        String receive = startData.getString("total");
+        int totes = Integer.parseInt(receive);
+        TOTAL = totes;
+        int nums[] = new int[TOTAL];
+
         initial_buttons();
         clear_buttons();
         run();
@@ -173,23 +184,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttons[14] = (Button)findViewById(R.id.button15);
         buttons[15] = (Button)findViewById(R.id.button16);
 
-        /*buttons[0].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[1].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[2].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[3].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[4].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[5].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[6].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[7].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[8].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[9].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[10].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[11].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[12].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[13].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[14].setBackgroundColor((Color.parseColor("#000000")));
-        buttons[15].setBackgroundColor((Color.parseColor("#000000")));*/
-
         buttons[0].setOnClickListener(this);
         buttons[1].setOnClickListener(this);
         buttons[2].setOnClickListener(this);
@@ -209,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public boolean check_array(int check[], int num){
-        for(int i = 0; i < check.length; ++i){
+        for(int i = 0; i < TOTAL; ++i){
             if(check[i] == num)
                 return true;
         }
@@ -229,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         boolean duplicate;
 
-        for(int i = 0; i < nums.length; ++i){
+        for(int i = 0; i < TOTAL; ++i){
             num = rand.nextInt(16);
 
             duplicate = check_array(nums, num);
