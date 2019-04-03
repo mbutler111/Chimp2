@@ -4,204 +4,100 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     int TOTAL;
+    int gameType;
     int streak = 0;
-    Button buttons[] = new Button[16];
-    int nums[] = new int[16];
-    int current = 0;
-    boolean END = false;
-    boolean WIN = false;
+    int current = 1;
+    int[] rands;
+    boolean end = false;
+    boolean win = false;
+    gamePiece[] pieces = new gamePiece[16];
     TextView streakText;
 
-    public void run(){
+    public void runStandard(){
+        clearButtons();
+        resetPieces();
+        fillRand(rands, 0, 15);
+        setNums(pieces, rands);
+    }
+
+    public void checkGuess(gamePiece checkPiece){
+        if(checkPiece.num == current && end == false){
+            correctGuess(checkPiece);
+        }
+        else if (end == false){
+            wrongGuess(checkPiece);
+        }
+    }
+
+    public void correctGuess(gamePiece guessPiece){
+        if(current == 1)
+            clearButtons();
+
+        guessPiece.button.setBackgroundResource(R.drawable.button_background2);
+        ++current;
+
+        if(current == TOTAL + 1)
+            winRound();
+    }
+
+    public void wrongGuess(gamePiece guessPiece){
+        guessPiece.button.setBackgroundResource(R.drawable.button_background3);
+        guessPiece.button.setText("X");
+        end = true;
+        win = false;
+        streak = 0;
+        showButtons();
+    }
+
+    public void winRound(){
+        end = true;
+        win = true;
+        ++streak;
         streakText.setText("Streak: " + String.valueOf(streak));
-        populate_array(nums, -1);
-        set_nums();
+        showButtons();
     }
 
-    public void set_nums(){
-        fill_rand(nums);
-
-        for(int i = 0; i < TOTAL; i++){
-            buttons[nums[i]].setText(String.valueOf(i+1));
-            buttons[nums[i]].setTextColor(Color.parseColor("#0061ff"));
+    public void setNums(gamePiece setArray[], int numArray[]){
+        for(int i = 0; i < numArray.length; ++i){
+            setArray[numArray[i]].button.setText(String.valueOf(i+1));
+            setArray[numArray[i]].num = i+1;
         }
     }
 
-    public void check_guess(int guess){
-        if(current > TOTAL - 1)
-            return;
+    public void fillRand(int filler[], int min, int max){
+        Random rand = new Random();
+        int num = 0;
+        boolean duplicate;
 
-        if(guess == nums[current] && END == false) {
-            if(current == 0)
-                clear_buttons();
-
-            buttons[guess].setText(String.valueOf("x"));
-            buttons[guess].setBackgroundResource(R.drawable.button_background2);
-
-            if(current < TOTAL) {
-                current++;
-            }
-
-            if(current == TOTAL) {
-                WIN = true;
-                streak++;
-                show_nums();
-                streakText.setText("Streak: " + String.valueOf(streak));
-            }
+        for(int i = 0; i < filler.length; ++i){
+            filler[i] = -1;
         }
-        else if(END == false){
-            END = true;
-            streak = 0;
-            buttons[guess].setText(String.valueOf("x"));
-            buttons[guess].setBackgroundResource(R.drawable.button_background3);
-            show_nums();
+
+        for(int i = 0; i < filler.length; ++i){
+            num = min + rand.nextInt(max-min+1);
+
+            duplicate = checkArray(filler, num);
+            if(!duplicate)
+                filler[i] = num;
+            else
+                --i;
         }
     }
 
-    public void show_nums(){
-        for(int i = 0; i < TOTAL; ++i){
-            buttons[nums[i]].setText(String.valueOf(i+1));
-        }
-    }
-
-    public void retry(View v){
-        clear_buttons();
-        for(int i = 0; i < 16; ++i){
-            buttons[i].setBackgroundResource(R.drawable.button_background);
-        }
-        if(WIN == false)
-            streak = 0;
-        current = 0;
-        END = false;
-        WIN = false;
-        run();
-    }
-
-    public void goBack(View v){
-        Intent startScreen = new Intent(this, StartScreen.class);
-        startActivity(startScreen);
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.button1:
-                check_guess(0);
-                break;
-            case R.id.button2:
-                check_guess(1);
-                break;
-            case R.id.button3:
-                check_guess(2);
-                break;
-            case R.id.button4:
-                check_guess(3);
-                break;
-            case R.id.button5:
-                check_guess(4);
-                break;
-            case R.id.button6:
-                check_guess(5);
-                break;
-            case R.id.button7:
-                check_guess(6);
-                break;
-            case R.id.button8:
-                check_guess(7);
-                break;
-            case R.id.button9:
-                check_guess(8);
-                break;
-            case R.id.button10:
-                check_guess(9);
-                break;
-            case R.id.button11:
-                check_guess(10);
-                break;
-            case R.id.button12:
-                check_guess(11);
-                break;
-            case R.id.button13:
-                check_guess(12);
-                break;
-            case R.id.button14:
-                check_guess(13);
-                break;
-            case R.id.button15:
-                check_guess(14);
-                break;
-            case R.id.button16:
-                check_guess(15);
-                break;
-        }
-    }
-
-    /////////////////////////////////////////////////////
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        Bundle startData = getIntent().getExtras();
-        String receive = startData.getString("total");
-        int totes = Integer.parseInt(receive);
-        TOTAL = totes;
-        int nums[] = new int[TOTAL];
-
-        initial_buttons();
-        clear_buttons();
-        run();
-    }
-
-    public void initial_buttons(){
-        streakText = (TextView)findViewById(R.id.streakText);
-
-        buttons[0] = (Button)findViewById(R.id.button1);
-        buttons[1] = (Button)findViewById(R.id.button2);
-        buttons[2] = (Button)findViewById(R.id.button3);
-        buttons[3] = (Button)findViewById(R.id.button4);
-        buttons[4] = (Button)findViewById(R.id.button5);
-        buttons[5] = (Button)findViewById(R.id.button6);
-        buttons[6] = (Button)findViewById(R.id.button7);
-        buttons[7] = (Button)findViewById(R.id.button8);
-        buttons[8] = (Button)findViewById(R.id.button9);
-        buttons[9] = (Button)findViewById(R.id.button10);
-        buttons[10] = (Button)findViewById(R.id.button11);
-        buttons[11] = (Button)findViewById(R.id.button12);
-        buttons[12] = (Button)findViewById(R.id.button13);
-        buttons[13] = (Button)findViewById(R.id.button14);
-        buttons[14] = (Button)findViewById(R.id.button15);
-        buttons[15] = (Button)findViewById(R.id.button16);
-
-        buttons[0].setOnClickListener(this);
-        buttons[1].setOnClickListener(this);
-        buttons[2].setOnClickListener(this);
-        buttons[3].setOnClickListener(this);
-        buttons[4].setOnClickListener(this);
-        buttons[5].setOnClickListener(this);
-        buttons[6].setOnClickListener(this);
-        buttons[7].setOnClickListener(this);
-        buttons[8].setOnClickListener(this);
-        buttons[9].setOnClickListener(this);
-        buttons[10].setOnClickListener(this);
-        buttons[11].setOnClickListener(this);
-        buttons[12].setOnClickListener(this);
-        buttons[13].setOnClickListener(this);
-        buttons[14].setOnClickListener(this);
-        buttons[15].setOnClickListener(this);
-    }
-
-    public boolean check_array(int check[], int num){
-        for(int i = 0; i < TOTAL; ++i){
+    public boolean checkArray(int check[], int num){
+        for(int i = 0; i < check.length; ++i){
             if(check[i] == num)
                 return true;
         }
@@ -209,32 +105,165 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return false;
     }
 
-    public void clear_buttons(){
+    public void retry(View v){
+        if(win == false)
+            streak = 0;
+        win = false;
+        streakText.setText("Streak: " + String.valueOf(streak));
+        current = 1;
+        end = false;
+        runStandard();
+    }
+
+    public void goBack(View v){
+        Intent startScreen = new Intent(this, StartScreen.class);
+        startActivity(startScreen);
+    }
+
+    public void initialPieces(){
+        streakText = (TextView)findViewById(R.id.streakText);
+
         for(int i = 0; i < 16; ++i){
-            buttons[i].setText(" ");
+            gamePiece setter = new gamePiece();
+            pieces[i] = setter;
+        }
+
+        pieces[0].button = findViewById(R.id.button1);
+        pieces[1].button = findViewById(R.id.button2);
+        pieces[2].button = findViewById(R.id.button3);
+        pieces[3].button = findViewById(R.id.button4);
+        pieces[4].button = findViewById(R.id.button5);
+        pieces[5].button = findViewById(R.id.button6);
+        pieces[6].button = findViewById(R.id.button7);
+        pieces[7].button = findViewById(R.id.button8);
+        pieces[8].button = findViewById(R.id.button9);
+        pieces[9].button = findViewById(R.id.button10);
+        pieces[10].button = findViewById(R.id.button11);
+        pieces[11].button = findViewById(R.id.button12);
+        pieces[12].button = findViewById(R.id.button13);
+        pieces[13].button = findViewById(R.id.button14);
+        pieces[14].button = findViewById(R.id.button15);
+        pieces[15].button = findViewById(R.id.button16);
+
+        pieces[0].button.setOnClickListener(this);
+        pieces[1].button.setOnClickListener(this);
+        pieces[2].button.setOnClickListener(this);
+        pieces[3].button.setOnClickListener(this);
+        pieces[4].button.setOnClickListener(this);
+        pieces[5].button.setOnClickListener(this);
+        pieces[6].button.setOnClickListener(this);
+        pieces[7].button.setOnClickListener(this);
+        pieces[8].button.setOnClickListener(this);
+        pieces[9].button.setOnClickListener(this);
+        pieces[10].button.setOnClickListener(this);
+        pieces[11].button.setOnClickListener(this);
+        pieces[12].button.setOnClickListener(this);
+        pieces[13].button.setOnClickListener(this);
+        pieces[14].button.setOnClickListener(this);
+        pieces[15].button.setOnClickListener(this);
+
+        clearButtons();
+    }
+
+    public void showButtons(){
+        for(int i = 0; i < 16; ++i){
+            if(pieces[i].num != -1)
+                pieces[i].button.setText(String.valueOf(pieces[i].num));
         }
     }
 
-    public void fill_rand(int nums[]){
-        Random rand = new Random();
-        int num = 0;
-
-        boolean duplicate;
-
-        for(int i = 0; i < TOTAL; ++i){
-            num = rand.nextInt(16);
-
-            duplicate = check_array(nums, num);
-            if(!duplicate)
-                nums[i] = num;
-            else
-                --i;
+    public void clearButtons(){
+        for(int i = 0; i < 16; i++){
+            pieces[i].button.setText(" ");
+            pieces[i].button.setBackgroundResource(R.drawable.button_background);
         }
     }
 
-    public void populate_array(int arr[], int fill){
-        for(int i = 0; i < arr.length; ++i){
-            arr[i] = fill;
+    public void resetPieces(){
+        for(int i = 0; i < 16; ++i){
+            pieces[i].num = -1;
+        }
+    }
+
+    public void receiveData(){
+        Bundle startData = getIntent().getExtras();
+        String receive = startData.getString("total");
+        int totes = Integer.parseInt(receive);
+        TOTAL = totes;
+        receive = startData.getString("type");
+        int gotes = Integer.parseInt(receive);
+        gameType = gotes;
+        rands = new int[TOTAL];
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.button1:
+                checkGuess(pieces[0]);
+                break;
+            case R.id.button2:
+                checkGuess(pieces[1]);
+                break;
+            case R.id.button3:
+                checkGuess(pieces[2]);
+                break;
+            case R.id.button4:
+                checkGuess(pieces[3]);
+                break;
+            case R.id.button5:
+                checkGuess(pieces[4]);
+                break;
+            case R.id.button6:
+                checkGuess(pieces[5]);
+                break;
+            case R.id.button7:
+                checkGuess(pieces[6]);
+                break;
+            case R.id.button8:
+                checkGuess(pieces[7]);
+                break;
+            case R.id.button9:
+                checkGuess(pieces[8]);
+                break;
+            case R.id.button10:
+                checkGuess(pieces[9]);
+                break;
+            case R.id.button11:
+                checkGuess(pieces[10]);
+                break;
+            case R.id.button12:
+                checkGuess(pieces[11]);
+                break;
+            case R.id.button13:
+                checkGuess(pieces[12]);
+                break;
+            case R.id.button14:
+                checkGuess(pieces[13]);
+                break;
+            case R.id.button15:
+                checkGuess(pieces[14]);
+                break;
+            case R.id.button16:
+                checkGuess(pieces[15]);
+                break;
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        receiveData();
+        initialPieces();
+        if(gameType == 0){
+            runStandard();
+        }else if(gameType == 1){
+
+        }
+        else if(gameType == 2){
+
         }
     }
 }

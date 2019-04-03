@@ -3,6 +3,7 @@ package com.example.chimp2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ public class StartScreen extends AppCompatActivity {
     public void start(View v) {
         Intent startGame = new Intent(this, MainActivity.class);
         startGame.putExtra("total", String.valueOf(curNum));
+        startGame.putExtra("type", String.valueOf(curType));
         startActivity(startGame);
     }
 
