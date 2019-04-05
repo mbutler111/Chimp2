@@ -2,6 +2,7 @@ package com.example.chimp2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -90,7 +91,11 @@ public class StartScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
 
         fillArrs();
+        changeType(curType);
+        changenum(curNum);
     }
 }
