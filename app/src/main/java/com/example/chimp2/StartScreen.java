@@ -15,8 +15,16 @@ public class StartScreen extends AppCompatActivity {
 
     public void start(View v) {
         Intent startGame = new Intent(this, MainActivity.class);
+        if(curType == 0)
+            startGame = new Intent(this, MainActivity.class);
+        else if(curType == 1)
+            startGame = new Intent(this, ProgressActivity.class);
+        else if(curType == 2)
+            startGame = new Intent(this, ProgressActivity.class);
+
+
+
         startGame.putExtra("total", String.valueOf(curNum));
-        startGame.putExtra("type", String.valueOf(curType));
         startActivity(startGame);
     }
 

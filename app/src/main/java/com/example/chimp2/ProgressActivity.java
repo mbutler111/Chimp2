@@ -13,7 +13,7 @@ import org.w3c.dom.Text;
 
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class ProgressActivity extends AppCompatActivity implements View.OnClickListener {
 
     int TOTAL;
     int gameType;
@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         resetPieces();
         fillRand(rands, 0, 15);
         setNums(pieces, rands);
+        pieces[0].button.setText("SUP");
     }
 
     public void checkGuess(gamePiece checkPiece){
