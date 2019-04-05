@@ -258,13 +258,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         receiveData();
         initialPieces();
-        if(gameType == 0){
-            run();
-        }else if(gameType == 1){
-
-        }
-        else if(gameType == 2){
-
-        }
+        run();
     }
 }

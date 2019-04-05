@@ -16,7 +16,7 @@ import java.util.Random;
 public class ProgressActivity extends AppCompatActivity implements View.OnClickListener {
 
     int TOTAL;
-    int gameType;
+    int orgTote;
     int streak = 0;
     int current = 1;
     int[] rands;
@@ -26,11 +26,11 @@ public class ProgressActivity extends AppCompatActivity implements View.OnClickL
     TextView streakText;
 
     public void run(){
+        rands = new int[TOTAL];
         clearButtons();
         resetPieces();
         fillRand(rands, 0, 15);
         setNums(pieces, rands);
-        pieces[0].button.setText("SUP");
     }
 
     public void checkGuess(gamePiece checkPiece){
@@ -66,6 +66,8 @@ public class ProgressActivity extends AppCompatActivity implements View.OnClickL
         end = true;
         win = true;
         ++streak;
+        if(TOTAL < 16)
+            ++TOTAL;
         streakText.setText("Streak: " + String.valueOf(streak));
         showButtons();
     }
@@ -107,8 +109,10 @@ public class ProgressActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void retry(View v){
-        if(win == false)
+        if(win == false) {
             streak = 0;
+            TOTAL = orgTote;
+        }
         win = false;
         streakText.setText("Streak: " + String.valueOf(streak));
         current = 1;
@@ -195,6 +199,7 @@ public class ProgressActivity extends AppCompatActivity implements View.OnClickL
         String receive = startData.getString("total");
         int totes = Integer.parseInt(receive);
         TOTAL = totes;
+        orgTote = TOTAL;
         rands = new int[TOTAL];
     }
 
@@ -259,13 +264,6 @@ public class ProgressActivity extends AppCompatActivity implements View.OnClickL
 
         receiveData();
         initialPieces();
-        if(gameType == 0){
-            run();
-        }else if(gameType == 1){
-
-        }
-        else if(gameType == 2){
-
-        }
+        run();
     }
 }
