@@ -2,6 +2,8 @@ package com.example.chimp2;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.CountDownTimer;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +18,6 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     int TOTAL;
-    int gameType;
     int streak = 0;
     int current = 1;
     int[] rands;
@@ -255,6 +256,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
+
 
         receiveData();
         initialPieces();
